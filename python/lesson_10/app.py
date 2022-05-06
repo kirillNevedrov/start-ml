@@ -41,12 +41,10 @@ def get_post_feed(id: int, limit: int = 10, db: Session = Depends(get_db)):
 
 @app.get("/post/recommendations/", response_model=List[PostGet])
 def get_post_recommendations(id: int, limit: int = 10, db: Session = Depends(get_db)):
-    post_ids = db \
-                .query(Feed.post_id) \
-                .filter(Feed.action == 'like') \
-                .group_by(Feed.post_id) \
-                .order_by(desc(func.count(Feed.post_id))) \
-                .limit(limit) \
-                .all()
-
-    return db.query(Post).filter(Post.id.in_(post_ids)).all()
+    return db.query(Post.id, Post.text, Post.topic) \
+        .join(Feed, Feed.post_id == Post.id) \
+        .filter(Feed.action == 'like') \
+        .group_by(Post.id) \
+        .order_by(func.count(Post.id).desc()) \
+        .limit(limit) \
+        .all()
