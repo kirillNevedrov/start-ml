@@ -25,7 +25,9 @@ class PostGet(BaseModel):
 
 class FeedGet(BaseModel):
     user_id: Optional[int]
+    user: Optional[UserGet]
     post_id: Optional[int]
+    post: Optional[PostGet]
     action: Optional[str]
     time: Optional[datetime]
 
